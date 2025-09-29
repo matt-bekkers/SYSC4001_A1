@@ -2,16 +2,19 @@
  *
  * @file interrupts.cpp
  * @author Sasisekhar Govind
+ * @author Edited by Matthe Bekkers
  *
  */
 
-#include<interrupts.hpp>
+#include "interrupts.hpp"
+#include <fstream>
+#include <iostream>
 
 int main(int argc, char** argv) {
 
     //vectors is a C++ std::vector of strings that contain the address of the ISR
     //delays  is a C++ std::vector of ints that contain the delays of each device
-    //the index of these elemens is the device number, starting from 0
+    //the index of these elements is the device number, starting from 0
     auto [vectors, delays] = parse_args(argc, argv);
     std::ifstream input_file(argv[1]);
 
@@ -20,7 +23,8 @@ int main(int argc, char** argv) {
 
     /******************ADD YOUR VARIABLES HERE*************************/
 
-
+    int16_t time = 0; // global timer to track elapsed time
+    int8_t vector_num = 0; // incremented every time an interrupt is called from the table
 
     /******************************************************************/
 
@@ -30,7 +34,7 @@ int main(int argc, char** argv) {
 
         /******************ADD YOUR SIMULATION CODE HERE*************************/
 
-
+        
 
         /************************************************************************/
 
