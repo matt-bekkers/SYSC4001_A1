@@ -2,7 +2,9 @@
  *
  * @file interrupts.cpp
  * @author Sasisekhar Govind
- * @author Edited by Matthe Bekkers
+ * 
+ * @author Matthe Bekkers
+ * @author Tomas Alvarez
  *
  */
 
@@ -28,13 +30,17 @@ int main(int argc, char** argv) {
     auto [vectors, delays] = parse_args(argc, argv);
     std::ifstream input_file(argv[1]);
 
-    std::string trace;
-    std::string execution;
-    
+    std::string trace;      //!< string to store single line of trace file
+    std::string execution = "";  //!< string to accumulate the execution output
+
     /******************ADD YOUR VARIABLES HERE*************************/
     
 
-    
+    int current_time = 0; // global timer to track elapsed time
+    int intr_count = 0; // incremented every time an interrupt is called from the table
+    int ctx_time = 10; // ms to switch contextx
+    bool isr_state = true; // tracks isr state
+    std::pair<std::string , int> interrupt_boilerplate_out;
 
     int time = 0;
     /******************************************************************/
@@ -44,33 +50,66 @@ int main(int argc, char** argv) {
         auto [activity, value] = parse_trace(trace);
 
         /******************ADD YOUR SIMULATION CODE HERE*************************/
-        
-        
+
         if (activity == "CPU") {
-            if (value > 0){
-                execution += std::to_string(time) + ", " + std::to_string(value) + ", CPU burst\n";
-                time += value;
+            execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", CPU burst\n"; // any CPU action
+            current_time += duration_intr;
+        }
+        else if (activity == "SYSCALL") {
+            execution += std::to_string(current_time) + ", 1, check interrupts enabled\n"; // must first check that interrupts are enabled
+            current_time++;                                                              // assume that they are for this assignment
+
+            execution += std::to_string(current_time) + ", 1, check flags\n"; // check that flags are properly set, assume they are
+            current_time++;
+
+            interrupt_boilerplate_out = intr_boilerplate(current_time, intr_count, ctx_time, vectors); // get basic interrupt actions
+
+            execution += interrupt_boilerplate_out.first;
+            current_time = interrupt_boilerplate_out.second;
+
+            // now start executing the ISR
+            // this assumes the system will always alternate between a SYSCALL and an END_IO
+
+            // set flags. note that we are arbitrarly the tasks into pre-timed chunks; real-life durations will vary
+            // 5% done
+            execution += std::to_string(current_time) + ", " + std::to_string((int) round(delays[duration_intr] * 0.05)) + ", set flag\n";
+            current_time += round(delays[duration_intr] * 0.05);
+
+            if (isr_state) {
+                // send data to buffer, 45% done
+                execution += std::to_string(current_time) + ", " + std::to_string((int) round(delays[duration_intr] * 0.4)) + ", get data to buffer\n";
+                current_time += round(delays[duration_intr] * 0.4);
+
+                // call driver
+                execution += std::to_string(current_time) + ", " + std::to_string((int) round(delays[duration_intr] * 0.55)) + ", call driver\n";
+                current_time += round(delays[duration_intr] * 0.55);
+
+                // swap ISR state (we assume END_IO is next)
+                isr_state = false;
             }
-        } else if (activity == "SYSCALL" || activity == "END_IO") {
-            
-            int dev = value;
-            std::string isr = (dev >= 0 && dev < (int)vectors.size()) ? vectors[dev] : "0x0000";
-            std::string label = (activity == "SYSCALL" ? "syscall dev " : "end_io dev ") + std::to_string(dev);
+            else {
+                // call driver
+                execution += std::to_string(current_time) + ", " + std::to_string((int) round(delays[duration_intr] * 0.55)) + ", call driver\n";
+                current_time += round(delays[duration_intr]);
 
-            // switch to kernel
-            execution += std::to_string(time) + ", " + std::to_string(KERNEL_SWITCH_MS)
-                    + ", switch to kernel mode (" + label + ")\n";
-            time += KERNEL_SWITCH_MS;
+                // read buffer
+                execution += std::to_string(current_time) + ", " + std::to_string((int) round(delays[duration_intr] * 0.4)) + ", get data from buffer\n";
+                current_time += round(delays[duration_intr]);
 
-            // save context
-            execution += std::to_string(time) + ", " + std::to_string(CTX_SAVE_MS)
-                    + ", context saved\n";
-            time += CTX_SAVE_MS;
+                isr_state = true;
+            }
+        } else if (activity == "END_IO") {
+            execution += std::to_string(current_time) + ", 1, IRET\n";
+            current_time++;
 
-            // find vector entry
-            execution += std::to_string(time) + ", " + std::to_string(VECTOR_CALC_MS)
-                    + ", find vector " + std::to_string(dev) + "\n";
-            time += VECTOR_CALC_MS;
+            execution += std::to_string(current_time) + ", " + std::to_string(delays[duration_intr]) + ", END I/O\n";
+            current_time += delays[duration_intr];
+            execution += std::to_string(current_time) + ", " + std::to_string(ctx_time) + ", Restore context\n";
+            current_time += ctx_time;
+        }
+        
+        intr_count++;
+        /************************************************************************/
 
             // obtain ISR address (required by spec)
             execution += std::to_string(time) + ", " + std::to_string(GET_ISR_MS)

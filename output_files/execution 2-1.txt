@@ -1,0 +1,78 @@
+0, 50, CPU burst
+50, 1, check interrupts enabled
+51, 1, check flags
+52, 1, switch to kernel mode
+53, 20, context saved
+73, 1, find vector 1 in memory position 0x0002
+74, 1, load address 0X029C into the PC
+75, 6, set flag
+81, 44, get data to buffer
+125, 61, call driver
+186, 1, IRET
+187, 110, END I/O
+297, 20, Restore context
+317, 10, CPU burst
+327, 1, check interrupts enabled
+328, 1, check flags
+329, 1, switch to kernel mode
+330, 20, context saved
+350, 1, find vector 4 in memory position 0x0008
+351, 1, load address 0X0292 into the PC
+352, 0, set flag
+352, 0, call driver
+352, 0, get data from buffer
+352, 1, IRET
+353, 0, END I/O
+353, 20, Restore context
+373, 200, CPU burst
+573, 1, check interrupts enabled
+574, 1, check flags
+575, 1, switch to kernel mode
+576, 20, context saved
+596, 1, find vector 7 in memory position 0x000E
+597, 1, load address 0X00BD into the PC
+598, 32, set flag
+630, 254, get data to buffer
+884, 350, call driver
+1234, 1, IRET
+1235, 636, END I/O
+1871, 20, Restore context
+1891, 400, CPU burst
+2291, 1, check interrupts enabled
+2292, 1, check flags
+2293, 1, switch to kernel mode
+2294, 20, context saved
+2314, 1, find vector 10 in memory position 0x0014
+2315, 1, load address 0X07B0 into the PC
+2316, 7, set flag
+2323, 80, call driver
+2468, 58, get data from buffer
+2613, 1, IRET
+2614, 145, END I/O
+2759, 20, Restore context
+2779, 230, CPU burst
+3009, 1, check interrupts enabled
+3010, 1, check flags
+3011, 1, switch to kernel mode
+3012, 20, context saved
+3032, 1, find vector 13 in memory position 0x001A
+3033, 1, load address 0X06C7 into the PC
+3034, 5, set flag
+3039, 40, get data to buffer
+3079, 55, call driver
+3134, 1, IRET
+3135, 100, END I/O
+3235, 20, Restore context
+3255, 610, CPU burst
+3865, 1, check interrupts enabled
+3866, 1, check flags
+3867, 1, switch to kernel mode
+3868, 20, context saved
+3888, 1, find vector 16 in memory position 0x0020
+3889, 1, load address 0X02DF into the PC
+3890, 13, set flag
+3903, 138, call driver
+4153, 100, get data from buffer
+4403, 1, IRET
+4404, 250, END I/O
+4654, 20, Restore context

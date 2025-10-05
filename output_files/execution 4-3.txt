@@ -1,0 +1,91 @@
+0, 82, CPU burst
+82, 1, check interrupts enabled
+83, 1, check flags
+84, 1, switch to kernel mode
+85, 10, context saved
+95, 1, find vector 1 in memory position 0x0002
+96, 1, load address 0X029C into the PC
+97, 42, set flag
+139, 340, get data to buffer
+479, 467, call driver
+946, 1, IRET
+947, 849, END I/O
+1796, 10, Restore context
+1806, 61, CPU burst
+1867, 1, check interrupts enabled
+1868, 1, check flags
+1869, 1, switch to kernel mode
+1870, 10, context saved
+1880, 1, find vector 4 in memory position 0x0008
+1881, 1, load address 0X0292 into the PC
+1882, 19, set flag
+1901, 210, call driver
+2283, 153, get data from buffer
+2665, 1, IRET
+2666, 382, END I/O
+3048, 10, Restore context
+3058, 221, CPU burst
+3279, 1, check interrupts enabled
+3280, 1, check flags
+3281, 1, switch to kernel mode
+3282, 10, context saved
+3292, 1, find vector 7 in memory position 0x000E
+3293, 1, load address 0X00BD into the PC
+3294, 13, set flag
+3307, 101, get data to buffer
+3408, 139, call driver
+3547, 1, IRET
+3548, 253, END I/O
+3801, 10, Restore context
+3811, 825, CPU burst
+4636, 1, check interrupts enabled
+4637, 1, check flags
+4638, 1, switch to kernel mode
+4639, 10, context saved
+4649, 1, find vector 10 in memory position 0x0014
+4650, 1, load address 0X07B0 into the PC
+4651, 0, set flag
+4651, 0, call driver
+4651, 0, get data from buffer
+4651, 1, IRET
+4652, 0, END I/O
+4652, 10, Restore context
+4662, 31, CPU burst
+4693, 1, check interrupts enabled
+4694, 1, check flags
+4695, 1, switch to kernel mode
+4696, 10, context saved
+4706, 1, find vector 13 in memory position 0x001A
+4707, 1, load address 0X06C7 into the PC
+4708, 34, set flag
+4742, 273, get data to buffer
+5015, 375, call driver
+5390, 1, IRET
+5391, 682, END I/O
+6073, 10, Restore context
+6083, 61, CPU burst
+6144, 1, check interrupts enabled
+6145, 1, check flags
+6146, 1, switch to kernel mode
+6147, 10, context saved
+6157, 1, find vector 16 in memory position 0x0020
+6158, 1, load address 0X02DF into the PC
+6159, 16, set flag
+6175, 175, call driver
+6494, 128, get data from buffer
+6813, 1, IRET
+6814, 319, END I/O
+7133, 10, Restore context
+7143, 61, CPU burst
+7204, 1, check interrupts enabled
+7205, 1, check flags
+7206, 1, switch to kernel mode
+7207, 10, context saved
+7217, 1, find vector 19 in memory position 0x0026
+7218, 1, load address 0X0765 into the PC
+7219, 15, set flag
+7234, 118, get data to buffer
+7352, 162, call driver
+7514, 1, IRET
+7515, 295, END I/O
+7810, 10, Restore context
