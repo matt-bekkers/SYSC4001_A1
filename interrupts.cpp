@@ -54,7 +54,6 @@ int main(int argc, char** argv) {
 
             execution += interrupt_boilerplate_out.first;
             current_time = interrupt_boilerplate_out.second;
-            std::cout << std::to_string(interrupt_boilerplate_out.second) + "\n";
 
             // now start executing the ISR
             // this assumes the system will always alternate between a SYSCALL and an END_IO
