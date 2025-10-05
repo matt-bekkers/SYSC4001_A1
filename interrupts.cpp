@@ -2,7 +2,9 @@
  *
  * @file interrupts.cpp
  * @author Sasisekhar Govind
- * @author Edited by Matthe Bekkers
+ * 
+ * @author Matthe Bekkers
+ * @author Tomas Alvarez
  *
  */
 
@@ -48,44 +50,44 @@ int main(int argc, char** argv) {
             execution += std::to_string(current_time) + ", 1, check flags\n"; // check that flags are properly set, assume they are
             current_time++;
 
-            interrupt_boilerplate_out = intr_boilerplate(current_time, duration_intr, ctx_time, vectors); // get basic interrupt actions
+            interrupt_boilerplate_out = intr_boilerplate(current_time, intr_count, ctx_time, vectors); // get basic interrupt actions
 
             execution += interrupt_boilerplate_out.first;
-            current_time += interrupt_boilerplate_out.second;
+            current_time = interrupt_boilerplate_out.second;
+            std::cout << std::to_string(interrupt_boilerplate_out.second) + "\n";
 
             // now start executing the ISR
             // this assumes the system will always alternate between a SYSCALL and an END_IO
 
             // set flags. note that we are arbitrarly the tasks into pre-timed chunks; real-life durations will vary
             // 5% done
-            execution += std::to_string(current_time) + ", " + std::to_string(round(delays[duration_intr] * 0.05)) + ", set flag\n";
+            execution += std::to_string(current_time) + ", " + std::to_string((int) round(delays[duration_intr] * 0.05)) + ", set flag\n";
             current_time += round(delays[duration_intr] * 0.05);
 
             if (isr_state) {
                 // send data to buffer, 45% done
-                execution += std::to_string(current_time) + ", " + std::to_string(round(delays[duration_intr] * 0.4)) + ", get data to buffer\n";
-                current_time += round(delays[duration_intr]);
+                execution += std::to_string(current_time) + ", " + std::to_string((int) round(delays[duration_intr] * 0.4)) + ", get data to buffer\n";
+                current_time += round(delays[duration_intr] * 0.4);
 
                 // call driver
-                execution += std::to_string(current_time) + ", " + std::to_string(round(delays[duration_intr] * 0.55)) + ", call driver\n";
-                current_time += round(delays[duration_intr]);
+                execution += std::to_string(current_time) + ", " + std::to_string((int) round(delays[duration_intr] * 0.55)) + ", call driver\n";
+                current_time += round(delays[duration_intr] * 0.55);
 
                 // swap ISR state (we assume END_IO is next)
-                isr_state = 0;
+                isr_state = false;
             }
             else {
                 // call driver
-                execution += std::to_string(current_time) + ", " + std::to_string(round(delays[duration_intr] * 0.55)) + ", call driver\n";
+                execution += std::to_string(current_time) + ", " + std::to_string((int) round(delays[duration_intr] * 0.55)) + ", call driver\n";
                 current_time += round(delays[duration_intr]);
 
                 // read buffer
-                execution += std::to_string(current_time) + ", " + std::to_string(round(delays[duration_intr] * 0.4)) + ", get data from buffer\n";
+                execution += std::to_string(current_time) + ", " + std::to_string((int) round(delays[duration_intr] * 0.4)) + ", get data from buffer\n";
                 current_time += round(delays[duration_intr]);
 
-                isr_state = 1;
+                isr_state = true;
             }
-            
-        if (activity == "END_IO") {
+        } else if (activity == "END_IO") {
             execution += std::to_string(current_time) + ", 1, IRET\n";
             current_time++;
 
@@ -94,8 +96,7 @@ int main(int argc, char** argv) {
             execution += std::to_string(current_time) + ", " + std::to_string(ctx_time) + ", Restore context\n";
             current_time += ctx_time;
         }
-        }
-
+        
         intr_count++;
         /************************************************************************/
 
