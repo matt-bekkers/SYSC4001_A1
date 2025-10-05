@@ -8,9 +8,19 @@
  *
  */
 
-#include "interrupts.hpp"
-#include <fstream>
-#include <iostream>
+#include"interrupts.hpp"
+#include<fstream>
+#include<vector>
+#include<string>
+
+
+
+static constexpr int KERNEL_SWITCH_MS = 1;
+static constexpr int CTX_SAVE_MS = 10;
+static constexpr int VECTOR_CALC_MS = 1;
+static constexpr int GET_ISR_MS = 1;
+static constexpr int ISR_BODY_MS = 40;
+static constexpr int IRET_MS = 1;
 
 int main(int argc, char** argv) {
 
@@ -24,6 +34,7 @@ int main(int argc, char** argv) {
     std::string execution = "";  //!< string to accumulate the execution output
 
     /******************ADD YOUR VARIABLES HERE*************************/
+    
 
     int current_time = 0; // global timer to track elapsed time
     int intr_count = 0; // incremented every time an interrupt is called from the table
@@ -31,11 +42,12 @@ int main(int argc, char** argv) {
     bool isr_state = true; // tracks isr state
     std::pair<std::string , int> interrupt_boilerplate_out;
 
+    int time = 0;
     /******************************************************************/
 
     //parse each line of the input trace file
     while(std::getline(input_file, trace)) {
-        auto [activity, duration_intr] = parse_trace(trace);
+        auto [activity, value] = parse_trace(trace);
 
         /******************ADD YOUR SIMULATION CODE HERE*************************/
 
@@ -99,7 +111,40 @@ int main(int argc, char** argv) {
         intr_count++;
         /************************************************************************/
 
-    }
+            // obtain ISR address (required by spec)
+            execution += std::to_string(time) + ", " + std::to_string(GET_ISR_MS)
+                    + ", obtain ISR address " + isr + "\n";
+            time += GET_ISR_MS;
+
+            // execute ISR body (simple fixed 40 ms per spec’s “each activity ≈ 40ms”)
+            execution += std::to_string(time) + ", " + std::to_string(ISR_BODY_MS)
+                    + ", execute ISR body (device " + std::to_string(dev) + ")\n";
+            time += ISR_BODY_MS;
+
+
+
+            // IRET
+            execution += std::to_string(time) + ", " + std::to_string(IRET_MS) + ", IRET\n";
+            time += IRET_MS;
+
+            // Optional: note I/O issuance on SYSCALL for readability
+            if (activity == "SYSCALL") {
+                int d = (dev >= 0 && dev < (int)delays.size()) ? delays[dev] : 0;
+                execution += std::to_string(time) + ", 1, issue I/O to device "
+                        + std::to_string(dev) + " (avg delay " + std::to_string(d) + " ms)\n";
+                time += 1;
+            }
+            
+         } else if (!activity.empty()) {
+            // Unknown line: log and continue (duration 0 to keep timeline intact)
+            execution += std::to_string(time) + ", 0, unknown activity: " + activity + "\n";
+        };
+            
+            
+
+
+        /************************************************************************/
+    };
 
     input_file.close();
 
